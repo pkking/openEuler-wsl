@@ -18,6 +18,8 @@ on:
         description: 'Should we upload the appxbundle to the store'
         required: true
         default: 'no'
+  push:
+    branches: [ "main" ]
   schedule:
     - cron: '0 10 * * *'
 concurrency: build-wsl
@@ -31,8 +33,6 @@ jobs:
     runs-on: windows-latest
     strategy:
       fail-fast: false
-    env:
-      workDir: 'C:/Temp/builddir'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -41,36 +41,12 @@ jobs:
           go-version: ${{ env.goversion }}
       - name: Setup MSBuild (PATH)
         uses: microsoft/setup-msbuild@v1.0.2
-      - name: Install certificate
-        shell: powershell
-        working-directory: ${{ env.workDir }}
-        run: |
-          New-Item -ItemType directory -Path certificate
-          Set-Content -Path certificate\certificate.txt -Value '${{ secrets.CERTIFICATE }}'
-          certutil -decode certificate\certificate.txt certificate\certificate.pfx
-          $pwd = ConvertTo-SecureString  '${{ secrets.CERTIFICATE_PASSWORD }}' -AsPlainText -Force
-          Import-PfxCertificate -Password $pwd -CertStoreLocation Cert:LocalMachine\Trust -FilePath certificate\certificate.pfx
-          Import-PfxCertificate -Password $pwd -CertStoreLocation Cert:CurrentUser\My -FilePath certificate\certificate.pfx
       - name: Build rootfs
-        working-directory: ${{ env.workDir }}
         shell: bash
         run: |
           mkdir -p x64
           generate_rootfs.sh
       - name: Build Bundle
         shell: powershell
-        working-directory: ${{ env.workDir }}
         run:  build.bat rel
-      - name: Allow downloading sideload appxbundle
-        uses: actions/upload-artifact@v2
-        with:
-          name: sideload-${{ matrix.AppID }}
-          path: |
-            ${{ env.workDir }}/AppPackages/Ubuntu/Ubuntu_*/*
-          retention-days: 7
-      - name: Upload build artifacts
-        if: ${{ steps.detect-upload-to-store.outputs.save-artifacts == 'true' }}
-        uses: actions/upload-artifact@v2
-        with:
-          name: build-artifacts-${{ matrix.AppID }}
-          path: ${{ env.workDir }}/${{ env.buildInfoPath }}/${{ matrix.AppID }}-*
+
