@@ -1,0 +1,76 @@
+name: Build WSL
+on:
+  workflow_dispatch:
+    inputs:
+      appID:
+        description: 'Release name to use for the bundle'
+        required: true
+        default: 'openEulerLatest'
+      rootfses:
+        description: 'WSL rootfs urls, separated by a colon. Direct set of "tar.gz::arch" if arch is not in the filename'
+        required: true
+        default: ''
+      rootfseschecksum:
+        description: 'Should download a SHA256SUMS file to check the rootfs'
+        required: true
+        default: 'no'
+      upload:
+        description: 'Should we upload the appxbundle to the store'
+        required: true
+        default: 'no'
+  schedule:
+    - cron: '0 10 * * *'
+concurrency: build-wsl
+
+env:
+  goversion: '1.18'
+
+jobs:
+  build-wsl:
+    name: Build openEuler 22.03
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    env:
+      workDir: 'C:/Temp/builddir'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ env.goversion }}
+      - name: Setup MSBuild (PATH)
+        uses: microsoft/setup-msbuild@v1.0.2
+      - name: Install certificate
+        shell: powershell
+        working-directory: ${{ env.workDir }}
+        run: |
+          New-Item -ItemType directory -Path certificate
+          Set-Content -Path certificate\certificate.txt -Value '${{ secrets.CERTIFICATE }}'
+          certutil -decode certificate\certificate.txt certificate\certificate.pfx
+          $pwd = ConvertTo-SecureString  '${{ secrets.CERTIFICATE_PASSWORD }}' -AsPlainText -Force
+          Import-PfxCertificate -Password $pwd -CertStoreLocation Cert:LocalMachine\Trust -FilePath certificate\certificate.pfx
+          Import-PfxCertificate -Password $pwd -CertStoreLocation Cert:CurrentUser\My -FilePath certificate\certificate.pfx
+      - name: Build rootfs
+        working-directory: ${{ env.workDir }}
+        shell: bash
+        run: |
+          mkdir -p x64
+          generate_rootfs.sh
+      - name: Build Bundle
+        shell: powershell
+        working-directory: ${{ env.workDir }}
+        run:  build.bat rel
+      - name: Allow downloading sideload appxbundle
+        uses: actions/upload-artifact@v2
+        with:
+          name: sideload-${{ matrix.AppID }}
+          path: |
+            ${{ env.workDir }}/AppPackages/Ubuntu/Ubuntu_*/*
+          retention-days: 7
+      - name: Upload build artifacts
+        if: ${{ steps.detect-upload-to-store.outputs.save-artifacts == 'true' }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts-${{ matrix.AppID }}
+          path: ${{ env.workDir }}/${{ env.buildInfoPath }}/${{ matrix.AppID }}-*
