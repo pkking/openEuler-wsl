@@ -7,14 +7,7 @@ name: rootfs
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main" ]
-    # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
-    paths: 
-      - docker/**
-      - generate_rootfs.sh
-      - '.github/workflows/rootfs.yaml'
+  workflow_call:
 
 env:
   # Use docker.io for Docker Hub if empty
