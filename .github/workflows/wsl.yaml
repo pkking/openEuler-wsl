@@ -29,7 +29,7 @@ env:
 
 jobs:
   build-rootfs:
-    uses: ${{github.repository}}/.github/workflows/rootfs.yaml@main
+    uses: ./.github/workflows/rootfs.yaml@main
   build-wsl:
     needs: build-rootfs
     name: Build openEuler 22.03
