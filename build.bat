@@ -42,8 +42,16 @@ if exist "%ProgramFiles%\MSBuild\14.0\bin" (
     set MSBUILD="%ProgramFiles%\MSBuild\14.0\bin\msbuild.exe"
     goto :FOUND_MSBUILD
 )
-if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin" (
-    set MSBUILD="%ProgramFiles%\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin\msbuild.exe"
+if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe" (
+    set MSBUILD="%ProgramFiles%\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
+    goto :FOUND_MSBUILD
+)
+if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe" (
+    set MSBUILD="%ProgramFiles%\Microsoft Visual Studio\2022\Professional\MSBuild\Current\Bin\MSBuild.exe"
+    goto :FOUND_MSBUILD
+)
+if exist "%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" (
+    set MSBUILD="%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe"
     goto :FOUND_MSBUILD
 )
 if %MSBUILD%==() (
