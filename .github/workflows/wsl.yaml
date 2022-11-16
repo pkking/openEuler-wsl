@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p x64
-          generate_rootfs.sh
+          sh ./generate_rootfs.sh
       - name: Build Bundle
         shell: powershell
         run:  build.bat rel
