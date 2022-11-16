@@ -43,11 +43,13 @@ jobs:
         uses: microsoft/setup-msbuild@v1.0.2
       - name: Download artifact
         uses: actions/download-artifact@v2
-      - name: show artifact
+      - name: show and prepare artifact
         shell: bash
         run: |
           ls -lh
-          pwd
+          mkdir -p x64 ARM64
+          mv openeule-amd64-wsl-rootfs.tar x64/install.tar && gzip x64/install.tar
+          mv openeuler-arm64-wsl-rootfs.tar ARM64/install.tar && gzip ARM64/install.tar
       - name: Build Bundle
         shell: powershell
         run:  .\build.bat rel

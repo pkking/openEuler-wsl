@@ -53,5 +53,5 @@ jobs:
         name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: myimage
+          name: openeuler-${{ matrix.arch }}-wsl-rootfs.tar
           path: /tmp/openeuler-${{ matrix.arch }}-wsl-rootfs.tar
