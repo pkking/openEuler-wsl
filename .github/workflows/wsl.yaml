@@ -48,5 +48,5 @@ jobs:
           sh ./generate_rootfs.sh
       - name: Build Bundle
         shell: powershell
-        run:  build.bat rel
+        run:  .\build.bat rel
 
