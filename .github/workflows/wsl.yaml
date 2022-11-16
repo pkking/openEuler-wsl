@@ -47,8 +47,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p x64 ARM64
-          mv openeuler-amd64-wsl-rootfs.tar x64/install.tar && gzip x64/install.tar
-          mv openeuler-arm64-wsl-rootfs.tar ARM64/install.tar && gzip ARM64/install.tar
+          gzip openeuler-amd64-wsl-rootfs.tar && mv openeuler-amd64-wsl-rootfs.tar.gz x64/install.tar.gz
+          gzip openeuler-arm64-wsl-rootfs.tar && mv openeuler-arm64-wsl-rootfs.tar.gz ARM64/install.tar.gz
           ls -lh **
       - name: Build Bundle
         shell: powershell
