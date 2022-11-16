@@ -39,24 +39,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - uses: actions/setup-go@v3
-        with:
-          go-version: ${{ env.goversion }}
       - name: Setup MSBuild (PATH)
         uses: microsoft/setup-msbuild@v1.0.2
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      -
-        name: Download artifact
+      - name: Download artifact
         uses: actions/download-artifact@v2
-        with:
-          name: myimage
-      -
-        name: Load Docker image
+      - name: show artifact
+        shell: bash
         run: |
-          docker load --input myimage.tar
-          docker image ls -a
+          ls -lh
+          pwd
       - name: Build Bundle
         shell: powershell
         run:  .\build.bat rel
