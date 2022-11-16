@@ -46,10 +46,10 @@ jobs:
       - name: show and prepare artifact
         shell: bash
         run: |
-          ls -lh
           mkdir -p x64 ARM64
-          mv openeule-amd64-wsl-rootfs.tar x64/install.tar && gzip x64/install.tar
+          mv openeuler-amd64-wsl-rootfs.tar x64/install.tar && gzip x64/install.tar
           mv openeuler-arm64-wsl-rootfs.tar ARM64/install.tar && gzip ARM64/install.tar
+          ls -lh **
       - name: Build Bundle
         shell: powershell
         run:  .\build.bat rel
