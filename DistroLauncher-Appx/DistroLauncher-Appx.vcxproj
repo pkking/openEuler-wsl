@@ -12,7 +12,6 @@
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
     <TargetName>openEuler22.03</TargetName>
     <ProjectName>DistroLauncher-Appx</ProjectName>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <ItemGroup Label="ProjectConfigurations">
@@ -75,7 +74,6 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <PackageCertificateKeyFile>DistroLauncher-Appx_TemporaryKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
     <PackageCertificateThumbprint>DB8C1F9D5AEB9174C9FF8FBFCE5EFB7C1051CE44</PackageCertificateThumbprint>

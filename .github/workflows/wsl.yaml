@@ -36,6 +36,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       fail-fast: false
+      matrix:
+        arch: [aarch64, x86_64]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -46,11 +48,25 @@ jobs:
       - name: show and prepare artifact
         shell: bash
         run: |
-          mkdir -p x64 ARM64
-          gzip openeuler-amd64-wsl-rootfs.tar/openeuler-amd64-wsl-rootfs.tar && mv openeuler-amd64-wsl-rootfs.tar/openeuler-amd64-wsl-rootfs.tar.gz x64/install.tar.gz
-          gzip openeuler-arm64-wsl-rootfs.tar/openeuler-arm64-wsl-rootfs.tar && mv openeuler-arm64-wsl-rootfs.tar/openeuler-arm64-wsl-rootfs.tar.gz ARM64/install.tar.gz
+          if [ "${{ matrix.arch }}" == "x86_64" ];then
+            echo "_TARGET=x64" >> $GITHUB_ENV
+          else
+            echo "_TARGET=ARM64" >> $GITHUB_ENV
+          fi
+          mkdir -p ${{ env._TARGET }}
+          gzip openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar && mv openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ matrix.arch }}/install.tar.gz
           ls -lh **
+      # Decode the Base64 encoded Pfx
+      - name: Decode the Pfx
+        workspace: .\DistroLauncher-Appx
+        run: |
+          New-Item -ItemType directory -Path certificate
+          Set-Content -Path certificate\certificate.txt -Value '${{ secrets.SIGN_CERT }}'
+          certutil -decode certificate\certificate.txt certificate\certificate.pfx
+          Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\Trust -FilePath certificate\certificate.pfx
+          Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\My -FilePath certificate\certificate.pfx
       - name: Build Bundle
         shell: powershell
-        run:  .\build.bat rel
+        run: |
+          msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env._TARGET }}" /p:Platform="${{ env._TARGET }}" -verbosity:normal
 

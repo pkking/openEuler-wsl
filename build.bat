@@ -74,11 +74,12 @@ shift
 goto :ARGS_LOOP
 
 :POST_ARGS_LOOP
-%MSBUILD% %~dp0\DistroLauncher.sln /t:%_MSBUILD_TARGET% /m /nr:true /p:Configuration=%_MSBUILD_CONFIG%;Platform=x64 /p:AppxBundlePlatforms=x64
+%MSBUILD% %~dp0\DistroLauncher.sln /t:%_MSBUILD_TARGET% /m /nr:true /p:Configuration=%_MSBUILD_CONFIG% /p:AppxBundlePlatforms=x64 /p:Platform=x64 /p:AppxBundle=Always 
+%MSBUILD% %~dp0\DistroLauncher.sln /t:%_MSBUILD_TARGET% /m /nr:true /p:Configuration=%_MSBUILD_CONFIG% /p:AppxBundlePlatforms=ARM64 /p:Platform=ARM64 /p:AppxBundle=Always 
 
 if (%ERRORLEVEL%) == (0) (
     echo.
-    echo Created appx in %~dp0x64\%_MSBUILD_CONFIG%\DistroLauncher-Appx\
+    echo Created appx in %~dp0x64 AND ARM64\%_MSBUILD_CONFIG%\DistroLauncher-Appx\
     echo.
 )
 
