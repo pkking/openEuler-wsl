@@ -50,10 +50,12 @@ jobs:
         run: |
           if [ "${{ matrix.arch }}" == "x86_64" ];then
             echo "_TARGET=x64" >> $GITHUB_ENV
+            mkdir -p x64
           else
             echo "_TARGET=ARM64" >> $GITHUB_ENV
+            mkdir -p ARM64
           fi
-          mkdir -p ${{ env._TARGET }}
+          
           gzip openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar && mv openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ matrix.arch }}/install.tar.gz
           ls -lh **
       # Decode the Base64 encoded Pfx
