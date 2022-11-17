@@ -58,7 +58,6 @@ jobs:
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx
-        workspace: .\DistroLauncher-Appx
         run: |
           New-Item -ItemType directory -Path certificate
           Set-Content -Path certificate\certificate.txt -Value '${{ secrets.SIGN_CERT }}'
