@@ -32,12 +32,13 @@ jobs:
     uses: ./.github/workflows/rootfs.yaml
   build-wsl:
     needs: build-rootfs
-    name: Build openEuler 22.03
+    name: Build openEuler ${{ matrix.release }}
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        arch: [aarch64, x86_64]
+        arch: [x86_64, aarch64]
+        release: [22.03, 20.03]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -53,11 +54,14 @@ jobs:
           else
             echo "_TARGET=ARM64" >> $GITHUB_ENV
           fi
+          awk 's/22.03/${{ matrix.release }}/g' DistroLauncher/DistributionInfo.h
+          awk 's/22.03/${{ matrix.release }}/g' DistroLauncher-Appx/MyDistro.appxmanifest
+          awk 's/22.03/${{ matrix.release }}/g' DistroLauncher-Appx/DistroLauncher-Appx.vcxproj
       - name: show and prepare artifact
         shell: bash
         run: |
           mkdir -p ${{ env._TARGET }}
-          mv openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz       
+          mv openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz       
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx

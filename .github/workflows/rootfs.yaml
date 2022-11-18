@@ -28,6 +28,7 @@ jobs:
     strategy:
       matrix:
         arch: [x86_64, aarch64]
+        release: [22.03, 20.03]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -47,18 +48,18 @@ jobs:
         with:
           context: docker/
           platforms: linux/${{ matrix.arch }}
-          tags: openeuler-wsl:22.03-lts
-          build-args: 22.03-lts
+          tags: openeuler-wsl:${{ matrix.release }}
+          build-args: REL_TAG=${{ matrix.release }}
           load: true
 
       - name: build wsl install.tar.gz
         id: build-rootfs
         run: |
-          sh generate_rootfs.sh 22.03-lts
-          mv install.tar.gz openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz
+          sh generate_rootfs.sh ${{ matrix.release }}
+          mv install.tar.gz openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz
       -
         name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: openeuler-${{ matrix.arch }}-wsl-rootfs.tar
-          path: openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz
+          name: openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar
+          path: openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz
