@@ -49,6 +49,7 @@ jobs:
           platforms: linux/${{ matrix.arch }}
           tags: openeuler-wsl:22.03-lts
           build-args: 22.03-lts
+          load: true
 
       - name: build wsl install.tar.gz
         id: build-rootfs
