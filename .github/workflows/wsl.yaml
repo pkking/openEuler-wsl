@@ -78,7 +78,7 @@ jobs:
       - name: Allow downloading sideload appxbundle
         uses: actions/upload-artifact@v2
         with:
-          name: sideload-openeuler-${{ matrix.arch }}
+          name: sideload-openeuler-${{ matrix.release }}-${{ matrix.arch }}
           path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
           retention-days: 7
 
