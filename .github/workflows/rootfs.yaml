@@ -52,7 +52,7 @@ jobs:
 
       - name: build wsl install.tar.gz
         id: build-rootfs
-        run:|
+        run: |
           sh generate_rootfs.sh 22.03-lts
           mv install.tar.gz openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz
       -
