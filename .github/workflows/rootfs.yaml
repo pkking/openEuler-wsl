@@ -47,11 +47,17 @@ jobs:
         with:
           context: docker/
           platforms: linux/${{ matrix.arch }}
-          tags: ${{ steps.meta.outputs.tags }}
-          outputs: type=docker,dest=/tmp/openeuler-${{ matrix.arch }}-wsl-rootfs.tar
+          tags: openeuler-wsl:22.03-lts
+          build-args: 22.03-lts
+
+      - name: build wsl install.tar.gz
+        id: build-rootfs
+        run:|
+          sh generate_rootfs.sh 22.03-lts
+          mv install.tar.gz openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz
       -
         name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: openeuler-${{ matrix.arch }}-wsl-rootfs.tar
-          path: /tmp/openeuler-${{ matrix.arch }}-wsl-rootfs.tar
+          path: openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz

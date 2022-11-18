@@ -57,7 +57,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p ${{ env._TARGET }}
-          gzip openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar && mv openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz       
+          mv openeuler-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz       
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx
