@@ -57,7 +57,7 @@ jobs:
         run: |
           msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env._TARGET }}" /p:Platform="${{ env._TARGET }}" -verbosity:normal
       - name: Allow downloading sideload appxbundle
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: sideload-openeuler-${{ matrix.release }}-${{ matrix.arch }}
           path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
