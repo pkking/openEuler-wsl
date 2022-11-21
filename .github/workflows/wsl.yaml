@@ -1,27 +1,8 @@
 name: Build WSL
 on:
   workflow_dispatch:
-    inputs:
-      appID:
-        description: 'Release name to use for the bundle'
-        required: true
-        default: 'openEulerLatest'
-      rootfses:
-        description: 'WSL rootfs urls, separated by a colon. Direct set of "tar.gz::arch" if arch is not in the filename'
-        required: true
-        default: ''
-      rootfseschecksum:
-        description: 'Should download a SHA256SUMS file to check the rootfs'
-        required: true
-        default: 'no'
-      upload:
-        description: 'Should we upload the appxbundle to the store'
-        required: true
-        default: 'no'
   push:
     branches: [ "main" ]
-  schedule:
-    - cron: '0 10 * * *'
 concurrency: build-wsl
 
 env:
@@ -32,7 +13,7 @@ jobs:
     uses: ./.github/workflows/rootfs.yaml
   build-wsl:
     needs: build-rootfs
-    name: Build openEuler ${{ matrix.release }}
+    name: Build openEuler ${{ matrix.release }} ${{ matrix.arch }} app
     runs-on: windows-latest
     strategy:
       fail-fast: false
