@@ -27,6 +27,9 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
       - name: Download artifact
         uses: actions/download-artifact@v2
+      - uses: actions/setup-python@v4
+        with:
+        python-version: '3.11' 
       - name: set env
         shell: bash
         run: |
@@ -35,9 +38,7 @@ jobs:
           else
             echo "_TARGET=ARM64" >> $GITHUB_ENV
           fi
-          sed -i 's/22.03/${{ matrix.release }}/g' DistroLauncher/DistributionInfo.h
-          sed -i 's/22.03/${{ matrix.release }}/g' DistroLauncher-Appx/MyDistro.appxmanifest
-          sed -i 's/22.03/${{ matrix.release }}/g' DistroLauncher-Appx/DistroLauncher-Appx.vcxproj
+          python3 custom.py -r ${{ matrix.release }}
       - name: show and prepare artifact
         shell: bash
         run: |
