@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap mp uap2 uap3 rescap desktop">
-  <Identity Name="openEuler22.03" Version="1.0.0.0" Publisher="CN=infra" ProcessorArchitecture="x64" />
-  <mp:PhoneIdentity PhoneProductId="160867c6-4e75-4e36-85c6-1543de07d5f3" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
+  <Identity Name="30248openEuler.openEuler22.03" Version="1.0.0.0" Publisher="CN=920C954F-C51F-4683-B12C-C821B68C7D6B" ProcessorArchitecture="x64" />
+  <mp:PhoneIdentity PhoneProductId="4f0b0338-1450-4800-a12f-76ba61cfcd17" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>openEuler22.03</DisplayName>
-    <PublisherDisplayName>openEuler community</PublisherDisplayName>
+    <DisplayName>openEuler 22.03</DisplayName>
+    <PublisherDisplayName>openEuler</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
