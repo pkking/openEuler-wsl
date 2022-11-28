@@ -6,19 +6,18 @@ on:
 concurrency: build-wsl
 
 env:
-  goversion: '1.18'
+  archs: "x64 ARM64"
 
 jobs:
   build-rootfs:
     uses: ./.github/workflows/rootfs.yaml
   build-wsl:
     needs: build-rootfs
-    name: Build openEuler ${{ matrix.release }} ${{ matrix.arch }} app
+    name: Build openEuler ${{ matrix.release }} app
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64, aarch64]
         release: [22.03, 20.03]
     steps:
       - name: Checkout repository
@@ -33,17 +32,17 @@ jobs:
       - name: set env
         shell: bash
         run: |
-          if [ "${{ matrix.arch }}" == "x86_64" ];then
-            echo "_TARGET=x64" >> $GITHUB_ENV
-          else
-            echo "_TARGET=ARM64" >> $GITHUB_ENV
-          fi
           python3 custom.py -r ${{ matrix.release }}
       - name: show and prepare artifact
         shell: bash
         run: |
-          mkdir -p ${{ env._TARGET }}
-          mv openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz
+          read -ra archs <<< ${{ env.archs }}
+          for arch in ${archs[@];do
+            mkdir -p $arch
+            mv openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar.gz $arch/install.tar.gz
+          done
+          targets=$(echo ${{ env.archs }}|sed 's/ /|/g')
+          echo "targets=$targets"  >> $GITHUB_ENV
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx
@@ -56,7 +55,7 @@ jobs:
       - name: Build Bundle
         shell: powershell
         run: |
-          msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env._TARGET }}" /p:Platform="${{ env._TARGET }}" -verbosity:normal /p:UapAppxPackageBuildMode="StoreUpload"
+          msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env.targets }}" -verbosity:normal /p:UapAppxPackageBuildMode="StoreUpload" /p:UseSubFolderForOutputDirDuringMultiPlatformBuild=false
       - name: copy assets
         shell: bash
         run: |
@@ -64,11 +63,13 @@ jobs:
       - name: Allow downloading sideload appxbundle
         uses: actions/upload-artifact@v2
         with:
-          name: sideload-openeuler-${{ matrix.release }}-${{ matrix.arch }}
+          name: sideload-openeuler-${{ matrix.release }}
           path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
           retention-days: 7
       - name: Allow downloading store appxupload
         uses: actions/upload-artifact@v2
         with:
-          name: storeupload-openeuler-${{ matrix.release }}-${{ matrix.arch }}
-          path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
+          name: storeupload-openeuler-${{ matrix.release }}
+          path: |
+            AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
+            AppPackages/DistroLauncher-Appx/*.PNG
