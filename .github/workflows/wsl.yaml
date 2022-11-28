@@ -41,7 +41,7 @@ jobs:
             mkdir -p $arch
             if [ $arch == "x64" ];then
               arch=x86_64
-            else if [ $arch == 'ARM64' ];then
+            elif [ $arch == 'ARM64' ];then
               arch=aarch64
             fi
             mv openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar.gz $arch/install.tar.gz
