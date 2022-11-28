@@ -43,7 +43,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p ${{ env._TARGET }}
-          mv openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz       
+          mv openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar/openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz ${{ env._TARGET }}/install.tar.gz
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx
@@ -56,11 +56,19 @@ jobs:
       - name: Build Bundle
         shell: powershell
         run: |
-          msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env._TARGET }}" /p:Platform="${{ env._TARGET }}" -verbosity:normal
+          msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env._TARGET }}" /p:Platform="${{ env._TARGET }}" -verbosity:normal /p:UapAppxPackageBuildMode="StoreUpload"
+      - name: copy assets
+        shell: bash
+        run: |
+          cp -v meta/${{ matrix.release }}/${{ matrix.release }}.PNG AppPackages/DistroLauncher-Appx/
       - name: Allow downloading sideload appxbundle
         uses: actions/upload-artifact@v2
         with:
           name: sideload-openeuler-${{ matrix.release }}-${{ matrix.arch }}
           path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
           retention-days: 7
-
+      - name: Allow downloading store appxupload
+        uses: actions/upload-artifact@v2
+        with:
+          name: storeupload-openeuler-${{ matrix.release }}-${{ matrix.arch }}
+          path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
