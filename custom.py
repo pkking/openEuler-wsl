@@ -3,9 +3,7 @@ import argparse
 import sys
 import shutil
 import os.path
-#          sed -i 's/22.03/${{ matrix.release }}/g' DistroLauncher/DistributionInfo.h
-#          sed -i 's/22.03/${{ matrix.release }}/g' DistroLauncher-Appx/MyDistro.appxmanifest
-#          sed -i 's/22.03/${{ matrix.release }}/g' DistroLauncher-Appx/DistroLauncher-Appx.vcxproj
+
 def init_parser():
     parser = argparse.ArgumentParser(
         prog = 'customer.py',

@@ -16,7 +16,7 @@
     "listings": {
         "en-us": {
             "baseListing": {
-                "copyrightAndTrademarkInfo": "${copyright_en}",
+                "copyrightAndTrademarkInfo": "Copyright © ${year} openEuler. All rights reserved.",
                 "keywords": [
                     "openEuler",
                     "WSL"
@@ -49,7 +49,7 @@
         },
         "zh": {
             "baseListing": {
-                "copyrightAndTrademarkInfo": "${copyright_zh}",
+                "copyrightAndTrademarkInfo": "版权所有 © ${year} openEuler 保留一切权利",
                 "keywords": [
                     "openEuler",
                     "WSL"

@@ -2,7 +2,9 @@
 import http.client, json, requests, time
 from azure.storage.blob import BlobClient
 from string import Template
-
+import argparse
+import sys
+import datetime
 class SubmitPackage(object):
     def __init__(self, tenantId: str, clientId: str, clientSecret: str) -> None:
         self._ingestionConnection = http.client.HTTPSConnection("manage.devcenter.microsoft.com")
@@ -20,54 +22,46 @@ class SubmitPackage(object):
         tokenConnection.close()
         self._init = True
 
-    #def make_submit_body(self, release, version, desc_en, desc_zh, copyright_en, copyright_zh, upload_file, image, releaseNotes_en, releaseNotes_zh, friendlyName):
-    def make_submit_body(self, **kargs):
-        data = dict(**kargs)
-        with open("template.json") as template:
+    def make_submit_body(self, metapath: str, templatepath: str):
+        with open(metapath, encoding='utf-8') as meta:
+            metadata = json.loads(meta.read())
+            metadata['year'] = datetime.date.today().year
+        with open(templatepath, encoding='utf-8') as template:
             content = ''.join(template.readlines())
             t = Template(content)
-            config = t.substitute(data)
-            print(config)
+            config = t.substitute(metadata)
         return config
 
-    def get_app_info(self, applicationId: str):
+    def get_app_info(self, release: str):
         if not self._init:
             return
         headers = {"Authorization": "Bearer " + self._acess_token,
                 "Content-type": "application/json",
                 "User-Agent": "Python"}
-        #self._ingestionConnection = http.client.HTTPSConnection("manage.devcenter.microsoft.com")
 
-        # Get application
-        self._ingestionConnection.request("GET", "/v1.0/my/applications/{0}".format(applicationId), "", headers)
+        self._ingestionConnection.request("GET", "/v1.0/my/applications", "", headers)
         appResponse = self._ingestionConnection.getresponse()
         print(appResponse.status)
         print(appResponse.headers["MS-CorrelationId"])  # Log correlation ID
-        #print(json.loads(appResponse.read().decode()))
-        return appResponse
+        data = json.loads(appResponse.read().decode())
+        for app in data['value']:
+            if app['primaryName'] == 'openEuler {}'.format(release):
+                return app
+        raise ValueError("no {} found".format(release))
 
-    def delete_exist_submission(self, applicationId: str):
+    def delete_exist_submission(self, submissionToRemove: str):
         if not self._init:
             return
-        appResponse = self.get_app_info(applicationId)
-        #self._ingestionConnection = http.client.HTTPSConnection("manage.devcenter.microsoft.com")
         headers = {"Authorization": "Bearer " + self._acess_token,
                 "Content-type": "application/json",
                 "User-Agent": "Python"}
-
-        # Delete existing in-progress submission
-        appJsonObject = json.loads(appResponse.read().decode())
-        if "pendingApplicationSubmission" in appJsonObject :
-            submissionToRemove = appJsonObject["pendingApplicationSubmission"]["resourceLocation"]
-            self._ingestionConnection.request("DELETE", "/v1.0/my/{}".format(submissionToRemove), "", headers)
-            deleteSubmissionResponse = self._ingestionConnection.getresponse()
-            print('delete pending submit status: {}'.format(deleteSubmissionResponse.status))
-            print(deleteSubmissionResponse.read().decode())
-            print(deleteSubmissionResponse.headers["MS-CorrelationId"])  # Log correlation ID
-            deleteSubmissionResponse.read()
-        else:
-            print("no pending submission")
-
+        self._ingestionConnection.request("DELETE", "/v1.0/my/{}".format(submissionToRemove), "", headers)
+        deleteSubmissionResponse = self._ingestionConnection.getresponse()
+        print('delete pending submit status: {}'.format(deleteSubmissionResponse.status))
+        print(deleteSubmissionResponse.read().decode())
+        print(deleteSubmissionResponse.headers["MS-CorrelationId"])  # Log correlation ID
+        deleteSubmissionResponse.read()
+   
     def create_submit(self, applicationId: str, appSubmissionRequestJson: str, zipFilePath: str):
         headers = {"Authorization": "Bearer " + self._acess_token,
                 "Content-type": "application/json",
@@ -122,12 +116,33 @@ class SubmitPackage(object):
 
         self._ingestionConnection.close()
 
+def init_parser():
+    parser = argparse.ArgumentParser(
+        prog = 'submit.py',
+        description= 'automate create a UWP app submission',
+    )
+
+    parser.add_argument('-c', '--client_id', help="azure AD applicaion client id")
+    parser.add_argument('-t', '--tenant_id', help="azure AD user id")
+    parser.add_argument('-k', '--client_secret', help="azure AD application key secret")
+    parser.add_argument('-r', '--release', help="release number")
+    parser.add_argument('-m', '--meta', help="meta data file for submission request template")
+    parser.add_argument('--template', default="template.json", help="submission request template, default to ./template.json")
+    return parser
+
 if __name__ == '__main__':
-    sp = SubmitPackage("36717d49-ab65-4442-954e-cf268f4099ed", "533545a1-0544-4558-b133-9bc20a5a9dd9", "WEd8Q~IDDcxpnCKLKislMmWrmJ5fBRezcXCv2aL7")
-    #origin(sp._acess_token, "9P9RSPJDKX9G")
-    #resp2003 = sp.get_app_info("9NWB78L1MPS2")
-    #resp2203 = sp.get_app_info("9P9RSPJDKX9G")
-    sp.delete_exist_submission("9P9RSPJDKX9G")
-    req = sp.make_submit_body(release="openEuler 22.03", version="1.0.0.0", desc_en="test desc", desc_zh="测试描述", image="screen.png", upload_file="test.appxupload", copyright_en="test copyright", copyright_zh="测试授权", releasenote_en="test releasenote", releasenote_zh="中文发布纪要")
-    sp.create_submit("9P9RSPJDKX9G", req, "test.zip")
+    parser = init_parser()
+    args = parser.parse_args()
+    if not args.client_id or not args.tenant_id or not args.meta or not args.client_secret or not args.release:
+        parser.print_help()
+        sys.exit(1)
+    sp = SubmitPackage(args.tenant_id, args.client_id, args.client_secret)
+    
+    data = sp.get_app_info(args.release)
+    if data and "pendingApplicationSubmission" in data :
+        submissionToRemove = data["pendingApplicationSubmission"]["resourceLocation"]
+        sp.delete_exist_submission(data['id'])
+    req = sp.make_submit_body(args.meta, args.template)
+    print(req)
+    #sp.create_submit("9P9RSPJDKX9G", req, "test.zip")
     
