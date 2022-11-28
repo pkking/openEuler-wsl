@@ -37,7 +37,7 @@ jobs:
         shell: bash
         run: |
           read -ra archs <<< ${{ env.archs }}
-          for arch in ${archs[@];do
+          for arch in ${archs[@]};do
             mkdir -p $arch
             mv openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar.gz $arch/install.tar.gz
           done
