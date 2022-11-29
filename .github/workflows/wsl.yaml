@@ -1,6 +1,11 @@
 name: Build WSL
 on:
   workflow_dispatch:
+    inputs:
+      upload:
+        description: 'Should we upload the appxbundle to the store'
+        required: true
+        default: 'yes'
   push:
     branches: [ "main" ]
 concurrency: build-wsl
@@ -41,7 +46,11 @@ jobs:
         working-directory: ${{ env.workDir }}
         shell: bash
         run: |
-          python3 custom.py -r ${{ matrix.release }}
+          r=echo "${{ matrix.release }}"|sed 's/.//
+          sp=$(python3 get_sp_version.py ${{ matrix.release }})
+          version=$(echo $v.$sp.${{ GITHUB_RUN_NUMBER }})
+          echo "version=$version" >> $GITHUB_ENV
+          python3 custom.py -r ${{ matrix.release }} -v $version
       - name: show and prepare artifact
         working-directory: ${{ env.workDir }}
         shell: bash
@@ -91,3 +100,13 @@ jobs:
           path: |
             ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
             ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/*.PNG
+      - name: Archive Release
+        uses: thedoctor0/zip-release@main
+        with:
+          directory: ${{ env.workDir }}/AppPackages/DistroLauncher-Appx
+          type: 'zip'
+          filename: 'app.zip'
+          exclusions: 'DistroLauncher-Appx_*_Test' 
+      - name: upload to store
+        run: |
+          python3 submit.py .\submit.py -c ${{ AZURE_AD_CLIENT_ID }} -t ${{ AZURE_AD_TENANT_ID }}  -k ${{ AZURE_AD_APP_KEY }} -r "${{ matrix.release }}" -f ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/app.zip
