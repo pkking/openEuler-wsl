@@ -38,12 +38,12 @@ jobs:
         run: |
           read -ra archs <<< ${{ env.archs }}
           for arch in ${archs[@]};do
-            mkdir -p $arch
             if [ $arch == "x64" ];then
               arch=x86_64
             elif [ $arch == 'ARM64' ];then
               arch=aarch64
             fi
+            mkdir -p $arch
             mv openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar.gz $arch/install.tar.gz
           done
           targets=$(echo ${{ env.archs }}|sed 's/ /|/g')
