@@ -39,12 +39,12 @@ jobs:
           read -ra archs <<< "${{ env.archs }}"
           for arch in ${archs[@]};do
             if [ $arch == "x64" ];then
-              arch=x86_64
+              targetarch=x86_64
             elif [ $arch == 'ARM64' ];then
-              arch=aarch64
+              targetarch=aarch64
             fi
             mkdir -p $arch
-            mv openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$arch-wsl-rootfs.tar.gz $arch/install.tar.gz
+            mv openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar.gz $arch/install.tar.gz
           done
           targets=$(echo ${{ env.archs }}|sed 's/ /|/g')
           echo "targets=$targets"  >> $GITHUB_ENV
