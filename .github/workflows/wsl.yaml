@@ -36,7 +36,7 @@ jobs:
       - name: show and prepare artifact
         shell: bash
         run: |
-          read -ra archs <<< "${{ env.archs }}""
+          read -ra archs <<< "${{ env.archs }}"
           for arch in ${archs[@]};do
             if [ $arch == "x64" ];then
               arch=x86_64
