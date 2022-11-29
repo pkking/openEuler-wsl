@@ -46,7 +46,8 @@ jobs:
         working-directory: ${{ env.workDir }}
         shell: bash
         run: |
-          r=echo "${{ matrix.release }}"|sed 's/.//
+          # make 22.03 to 2203
+          r=$(echo "${{ matrix.release }}"|sed 's/\.//)
           sp=$(python3 get_sp_version.py ${{ matrix.release }})
           version=$(echo $v.$sp.${{ github.run_number }})
           echo "version=$version" >> $GITHUB_ENV
