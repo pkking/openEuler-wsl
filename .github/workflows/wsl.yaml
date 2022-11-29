@@ -76,17 +76,15 @@ jobs:
         run: |
           cp -v meta/${{ matrix.release }}/${{ matrix.release }}.PNG AppPackages/DistroLauncher-Appx/
       - name: Allow downloading sideload appxbundle
-        working-directory: ${{ env.workDir }}
         uses: actions/upload-artifact@v2
         with:
           name: sideload-openeuler-${{ matrix.release }}
-          path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
+          path: ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
           retention-days: 7
       - name: Allow downloading store appxupload
-        working-directory: ${{ env.workDir }}
         uses: actions/upload-artifact@v2
         with:
           name: storeupload-openeuler-${{ matrix.release }}
           path: |
-            AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
-            AppPackages/DistroLauncher-Appx/*.PNG
+            ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
+            ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/*.PNG
