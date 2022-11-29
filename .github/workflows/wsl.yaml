@@ -32,6 +32,8 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
       - name: Download artifact
         uses: actions/download-artifact@v2
+        with:
+          path: ${{ env.workDir }}
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
@@ -52,10 +54,11 @@ jobs:
               targetarch=aarch64
             fi
             mkdir -vp $arch
-            mv -v ${{ github.workspace }}/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar.gz $arch/install.tar.gz
+            mv -v openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar.gz $arch/install.tar.gz
           done
           targets=$(echo ${{ env.archs }}|sed 's/ /|/g')
           echo "targets=$targets" >> $GITHUB_ENV
+          rm -rf openeuler-*-wsl-rootfs.tar
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx
