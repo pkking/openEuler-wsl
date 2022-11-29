@@ -7,6 +7,7 @@ concurrency: build-wsl
 
 env:
   archs: "x64 ARM64"
+  workDir: 'C:/Temp/builddir'
 
 jobs:
   build-rootfs:
@@ -20,8 +21,13 @@ jobs:
       matrix:
         release: [22.03, 20.03]
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout code
+        shell: bash
+        run: |
+          mkdir -p ${{ env.workDir }}
+          git clone ${{ github.repositoryUrl }} ${{ env.workDir }}
+          cd ${{ env.workDir }}
+          git checkout "${GITHUB_SHA}"
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
       - name: Download artifact
@@ -30,10 +36,12 @@ jobs:
         with:
           python-version: '3.11'
       - name: set env
+        working-directory: ${{ env.workDir }}
         shell: bash
         run: |
           python3 custom.py -r ${{ matrix.release }}
       - name: show and prepare artifact
+        working-directory: ${{ env.workDir }}
         shell: bash
         run: |
           read -ra archs <<< "${{ env.archs }}"
@@ -43,11 +51,11 @@ jobs:
             elif [ $arch == 'ARM64' ];then
               targetarch=aarch64
             fi
-            mkdir -p $arch
-            mv openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar.gz $arch/install.tar.gz
+            mkdir -vp $arch
+            mv -v ${{ github.workspace }}/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar/openeuler-${{ matrix.release }}-$targetarch-wsl-rootfs.tar.gz $arch/install.tar.gz
           done
           targets=$(echo ${{ env.archs }}|sed 's/ /|/g')
-          echo "targets=$targets"  >> $GITHUB_ENV
+          echo "targets=$targets" >> $GITHUB_ENV
           ls -lh **
       # Decode the Base64 encoded Pfx
       - name: Decode the Pfx
@@ -58,20 +66,24 @@ jobs:
           Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\Trust -FilePath certificate\certificate.pfx
           Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\My -FilePath certificate\certificate.pfx
       - name: Build Bundle
+        working-directory: ${{ env.workDir }}
         shell: powershell
         run: |
           msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env.targets }}" -verbosity:normal /p:UapAppxPackageBuildMode="StoreUpload" /p:UseSubFolderForOutputDirDuringMultiPlatformBuild=false
       - name: copy assets
+        working-directory: ${{ env.workDir }}
         shell: bash
         run: |
           cp -v meta/${{ matrix.release }}/${{ matrix.release }}.PNG AppPackages/DistroLauncher-Appx/
       - name: Allow downloading sideload appxbundle
+        working-directory: ${{ env.workDir }}
         uses: actions/upload-artifact@v2
         with:
           name: sideload-openeuler-${{ matrix.release }}
           path: AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
           retention-days: 7
       - name: Allow downloading store appxupload
+        working-directory: ${{ env.workDir }}
         uses: actions/upload-artifact@v2
         with:
           name: storeupload-openeuler-${{ matrix.release }}
