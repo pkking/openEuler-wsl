@@ -25,7 +25,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p ${{ env.workDir }}
-          git clone ${{ github.repositoryUrl }} ${{ env.workDir }}
+          git clone ${{ github.server_url }}/${{ github.repository }} ${{ env.workDir }}
           cd ${{ env.workDir }}
           git checkout "${GITHUB_SHA}"
       - name: Add msbuild to PATH
