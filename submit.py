@@ -133,16 +133,22 @@ def init_parser():
 if __name__ == '__main__':
     parser = init_parser()
     args = parser.parse_args()
-    if not args.client_id or not args.tenant_id or not args.meta or not args.client_secret or not args.release:
+
+    if not args.client_id or not args.tenant_id or not args.client_secret or not args.release:
         parser.print_help()
         sys.exit(1)
+
+    if not args.meta:
+        args.meta = 'meta/{}/meta.json'.format(args.release)
+    
     sp = SubmitPackage(args.tenant_id, args.client_id, args.client_secret)
     
     data = sp.get_app_info(args.release)
+
     if data and "pendingApplicationSubmission" in data :
         submissionToRemove = data["pendingApplicationSubmission"]["resourceLocation"]
-        sp.delete_exist_submission(data['id'])
-    req = sp.make_submit_body(args.meta, args.template)
-    print(req)
-    #sp.create_submit("9P9RSPJDKX9G", req, "test.zip")
+        sp.delete_exist_submission(submissionToRemove)
+    requestBody = sp.make_submit_body(args.meta, args.template)
+
+    sp.create_submit(data['id'], requestBody, "test.zip")
     
