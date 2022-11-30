@@ -121,7 +121,6 @@ jobs:
           ls -lh **
       - name: upload to store
         working-directory: ${{ env.workDir }}
-        if: ${{ github.event.inputs.upload == 'yes' }} 
         shell: bash
         run: |
           python3 submit.py -c ${{ secrets.AZURE_AD_CLIENT_ID }} -t ${{ secrets.AZURE_AD_TENANT_ID }}  -k ${{ secrets.AZURE_AD_APP_KEY }} -r "${{ matrix.release }}" -f AppPackages/DistroLauncher-Appx/app.zip
