@@ -98,7 +98,7 @@ class SubmitPackage(object):
         commitResponse = self._ingestionConnection.getresponse()
         print('commit submission status: {}'.format(commitResponse.status))
         print(commitResponse.headers["MS-CorrelationId"])  # Log correlation ID
-        #print(commitResponse.read())
+        print(commitResponse.read())
 
         # Pull submission status until commit process is completed
         self._ingestionConnection.request("GET", "/v1.0/my/applications/{0}/submissions/{1}/status".format(applicationId, submissionId), "", headers)
