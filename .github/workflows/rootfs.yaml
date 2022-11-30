@@ -8,7 +8,12 @@ name: rootfs
 on:
   workflow_dispatch:
   workflow_call:
-
+    inputs:
+      skip_rootfs_build:
+        description: 'Should we skip the rootfs build, mostly for speed up'
+        required: true
+        default: 'yes'
+        type: string
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
@@ -18,6 +23,7 @@ env:
 
 jobs:
   build-rootfs:
+    if: ${{ inputs.skip_rootfs_build == 'yes' }}
     name: Build openEuler ${{ matrix.release }} ${{ matrix.arch }} WSL rootfs
     runs-on: ubuntu-latest
     permissions:
