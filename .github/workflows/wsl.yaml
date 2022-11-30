@@ -42,12 +42,11 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'
       - name: install deps
         working-directory: ${{ env.workDir }}
         shell: bash
         run: |
-          pip install -r requirements.txt
+          [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: set env
         working-directory: ${{ env.workDir }}
         shell: bash
