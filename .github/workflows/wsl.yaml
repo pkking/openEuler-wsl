@@ -43,8 +43,11 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: '${{ env.workDir }}/requirements.txt'
-      - run: pip install -r ${{ env.workDir }}/requirements.txt
+      - name: install deps
+        working-directory: ${{ env.workDir }}
+        shell: bash
+        run: |
+          pip install -r requirements.txt
       - name: set env
         working-directory: ${{ env.workDir }}
         shell: bash
@@ -111,6 +114,13 @@ jobs:
           type: 'zip'
           filename: 'app.zip'
           exclusions: 'DistroLauncher-Appx_*_Test' 
-      - name: upload to store
+      - name: show zip files
+        working-directory: ${{ env.workDir }}
+        shell: bash
         run: |
-          python3 submit.py .\submit.py -c ${{ secrets.AZURE_AD_CLIENT_ID }} -t ${{ secrets.AZURE_AD_TENANT_ID }}  -k ${{ secrets.AZURE_AD_APP_KEY }} -r "${{ matrix.release }}" -f ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/app.zip
+          ls -lh **
+      - name: upload to store
+        working-directory: ${{ env.workDir }}
+        shell: bash
+        run: |
+          python3 submit.py -c ${{ secrets.AZURE_AD_CLIENT_ID }} -t ${{ secrets.AZURE_AD_TENANT_ID }}  -k ${{ secrets.AZURE_AD_APP_KEY }} -r "${{ matrix.release }}" -f AppPackages/DistroLauncher-Appx/app.zip
