@@ -4,8 +4,8 @@ on:
     inputs:
       upload:
         description: 'Should we upload the appxbundle to the store'
-        required: true
-        default: 'yes'
+        required: false
+        default: 'no'
 
   push:
     branches: [ "main" ]
@@ -120,6 +120,7 @@ jobs:
         run: |
           ls -lh **
       - name: upload to store
+        if: ${{ github.event.inputs.upload == 'yes' }}
         working-directory: ${{ env.workDir }}
         shell: bash
         run: |

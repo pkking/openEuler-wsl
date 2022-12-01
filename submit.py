@@ -11,7 +11,6 @@ import humanize
 class SubmitPackage(object):
     def __init__(self, tenantId: str, clientId: str, clientSecret: str) -> None:
         self._ingestionConnection = http.client.HTTPSConnection("manage.devcenter.microsoft.com")
-        #self._tokenEndpoint = "https://login.microsoftonline.com/{0}/oauth2/token"
         tokenResource = "https://manage.devcenter.microsoft.com"
         tokenRequestBody = "grant_type=client_credentials&client_id={0}&client_secret={1}&resource={2}".format(clientId, clientSecret, tokenResource)
         headers = {"Content-Type": "application/x-www-form-urlencoded; charset=utf-8"}
@@ -36,7 +35,7 @@ class SubmitPackage(object):
 
     def get_app_info(self, release: str):
         if not self._init:
-            return
+            sys.exit(1)
         headers = {"Authorization": "Bearer " + self._acess_token,
                 "Content-type": "application/json",
                 "User-Agent": "Python"}
@@ -53,7 +52,7 @@ class SubmitPackage(object):
 
     def delete_exist_submission(self, submissionToRemove: str):
         if not self._init:
-            return
+            sys.exit(1)
         headers = {"Authorization": "Bearer " + self._acess_token,
                 "Content-type": "application/json",
                 "User-Agent": "Python"}
@@ -71,22 +70,24 @@ class SubmitPackage(object):
         # Create submission
         self._ingestionConnection.request("POST", "/v1.0/my/applications/{0}/submissions".format(applicationId), "", headers)
         createSubmissionResponse = self._ingestionConnection.getresponse()
-        print('create submission status: {}'.format(createSubmissionResponse.status))
+        print('create submission status: {} {}'.format(createSubmissionResponse.status, createSubmissionResponse.reason))
         print(createSubmissionResponse.headers["MS-CorrelationId"])  # Log correlation ID
-
         submissionJsonObject = json.loads(createSubmissionResponse.read().decode())
+        if int(createSubmissionResponse.status) >= 400:
+            print(submissionJsonObject)
+            sys.exit(1) 
         submissionId = submissionJsonObject["id"]
         fileUploadUrl = submissionJsonObject["fileUploadUrl"]
-        #print(submissionId)
-        #print(fileUploadUrl)
 
         # Update submission
         self._ingestionConnection.request("PUT", "/v1.0/my/applications/{0}/submissions/{1}".format(applicationId, submissionId), appSubmissionRequestJson.encode('utf-8'), headers)
         updateSubmissionResponse = self._ingestionConnection.getresponse()
-        print('update submission status: {}'.format(updateSubmissionResponse.status))
-        #print(updateSubmissionResponse.read().decode())
+        print('update submission status: {} {}'.format(updateSubmissionResponse.status, updateSubmissionResponse.reason))
         print(updateSubmissionResponse.headers["MS-CorrelationId"])  # Log correlation ID
-        updateSubmissionResponse.read()
+        updateSubmissionObject = json.loads(updateSubmissionResponse.read().decode())
+        if updateSubmissionResponse.status >= 400:
+            print(updateSubmissionObject)
+            sys.exit(1)
 
         # Upload images and packages in a zip file.
         blob_client = BlobClient.from_blob_url(fileUploadUrl)
@@ -98,7 +99,10 @@ class SubmitPackage(object):
         commitResponse = self._ingestionConnection.getresponse()
         print('commit submission status: {}'.format(commitResponse.status))
         print(commitResponse.headers["MS-CorrelationId"])  # Log correlation ID
-        print(commitResponse.read())
+        commitResponseObject = commitResponse.read().decode()
+        if commitResponse.status >= 400:
+            print(commitResponseObject)
+            sys.exit(1)
 
         # Pull submission status until commit process is completed
         self._ingestionConnection.request("GET", "/v1.0/my/applications/{0}/submissions/{1}/status".format(applicationId, submissionId), "", headers)
@@ -153,7 +157,7 @@ if __name__ == '__main__':
     if data and "pendingApplicationSubmission" in data :
         submissionToRemove = data["pendingApplicationSubmission"]["resourceLocation"]
         sp.delete_exist_submission(submissionToRemove)
-    requestBody = sp.make_submit_body(args.meta, args.template)
 
+    requestBody = sp.make_submit_body(args.meta, args.template)
     sp.create_submit(data['id'], requestBody, args.zipfile)
     
