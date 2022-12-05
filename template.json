@@ -122,27 +122,6 @@
         ],
         "certificationReports": []
     },
-    "applicationPackages": [
-        {
-            "fileName": "${upload_file}",
-            "fileStatus": "PendingUpload",
-            "version": "${version}",
-            "architecture": "Neutral",
-            "targetPlatform": "Windows10",
-            "languages": [
-                "en-US"
-            ],
-            "capabilities": [
-                "Microsoft.storeFilter.core.notSupported_8wekyb3d8bbwe",
-                "runFullTrust"
-            ],
-            "minimumDirectXVersion": "None",
-            "minimumSystemRam": "None",
-            "targetDeviceFamilies": [
-                "Windows.Desktop min version 10.0.16215.0"
-            ]
-        }
-    ],
     "packageDeliveryOptions": {
         "packageRollout": {
             "isPackageRollout": false,

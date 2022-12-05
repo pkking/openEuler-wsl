@@ -31,7 +31,7 @@ class SubmitPackage(object):
             content = ''.join(template.readlines())
             t = Template(content)
             config = t.substitute(metadata)
-        return config
+        return json.loads(config)
 
     def get_app_info(self, release: str):
         if not self._init:
@@ -61,8 +61,8 @@ class SubmitPackage(object):
         print('delete pending submit status: {}'.format(deleteSubmissionResponse.status))
         print(deleteSubmissionResponse.headers["MS-CorrelationId"])  # Log correlation ID
         deleteSubmissionResponse.read()
-   
-    def create_submit(self, applicationId: str, appSubmissionRequestJson: str, zipFilePath: str):
+
+    def create_submit(self, applicationId: str, appSubmissionRequestJson, zipFilePath: str):
         headers = {"Authorization": "Bearer " + self._acess_token,
                 "Content-type": "application/json",
                 "User-Agent": "Python"}
@@ -79,8 +79,15 @@ class SubmitPackage(object):
         submissionId = submissionJsonObject["id"]
         fileUploadUrl = submissionJsonObject["fileUploadUrl"]
 
+        if len(submissionJsonObject['applicationPackages']) > 0:
+            for package in submissionJsonObject['applicationPackages']:
+                print('package {} {} {} will be replaced'.format(package['fileName'], package['fileStatus'], package['version']))
+                package['fileStatus'] = 'PendingDelete'
+
+        appSubmissionRequestJson['applicationPackages'] = submissionJsonObject['applicationPackages']
+
         # Update submission
-        self._ingestionConnection.request("PUT", "/v1.0/my/applications/{0}/submissions/{1}".format(applicationId, submissionId), appSubmissionRequestJson.encode('utf-8'), headers)
+        self._ingestionConnection.request("PUT", "/v1.0/my/applications/{0}/submissions/{1}".format(applicationId, submissionId), json.dumps(appSubmissionRequestJson).encode('utf-8'), headers)
         updateSubmissionResponse = self._ingestionConnection.getresponse()
         print('update submission status: {} {}'.format(updateSubmissionResponse.status, updateSubmissionResponse.reason))
         print(updateSubmissionResponse.headers["MS-CorrelationId"])  # Log correlation ID
@@ -99,7 +106,7 @@ class SubmitPackage(object):
         commitResponse = self._ingestionConnection.getresponse()
         print('commit submission status: {}'.format(commitResponse.status))
         print(commitResponse.headers["MS-CorrelationId"])  # Log correlation ID
-        commitResponseObject = commitResponse.read().decode()
+        commitResponseObject = json.loads(commitResponse.read().decode())
         if commitResponse.status >= 400:
             print(commitResponseObject)
             sys.exit(1)
