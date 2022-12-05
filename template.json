@@ -122,6 +122,14 @@
         ],
         "certificationReports": []
     },
+    "applicationPackages": [
+        {
+            "fileName": "${upload_file}",
+            "fileStatus": "PendingUpload",
+            "minimumDirectXVersion": "None",
+            "minimumSystemRam": "None"
+        }
+    ],
     "packageDeliveryOptions": {
         "packageRollout": {
             "isPackageRollout": false,

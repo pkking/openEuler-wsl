@@ -84,7 +84,7 @@ class SubmitPackage(object):
                 print('package {} {} {} will be replaced'.format(package['fileName'], package['fileStatus'], package['version']))
                 package['fileStatus'] = 'PendingDelete'
 
-        appSubmissionRequestJson['applicationPackages'] = submissionJsonObject['applicationPackages']
+        appSubmissionRequestJson['applicationPackages'].extend(submissionJsonObject['applicationPackages'])
 
         # Update submission
         self._ingestionConnection.request("PUT", "/v1.0/my/applications/{0}/submissions/{1}".format(applicationId, submissionId), json.dumps(appSubmissionRequestJson).encode('utf-8'), headers)

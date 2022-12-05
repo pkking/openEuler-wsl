@@ -107,6 +107,11 @@ jobs:
           path: |
             ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*.appxupload
             ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/*.PNG
+      - name: show zip files
+        working-directory: ${{ env.workDir }}/AppPackages/DistroLauncher-Appx
+        shell: bash
+        run: |
+          ls -lh **
       - name: Archive Release
         uses: thedoctor0/zip-release@main
         with:
@@ -114,11 +119,6 @@ jobs:
           type: 'zip'
           filename: 'app.zip'
           exclusions: 'DistroLauncher-Appx_*_Test' 
-      - name: show zip files
-        working-directory: ${{ env.workDir }}
-        shell: bash
-        run: |
-          ls -lh **
       - name: upload to store
         if: ${{ github.event.inputs.upload == 'yes' }}
         working-directory: ${{ env.workDir }}
