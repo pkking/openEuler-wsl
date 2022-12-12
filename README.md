@@ -11,7 +11,7 @@
         1. 双击`xxx.cer`
         1. 选择`local machine`
         1. 选择`trusted people`
-1. 双击Appx_xxx_arm64/x64.appxbundle 安装openeuler WSL应用
+    1. 双击`DistroLauncher-Appx_xxx_<arm64/x64>.appxbundle` 安装openeuler WSL应用
 
 
 ## roadmap
@@ -29,7 +29,7 @@ MIT
 2. 根据需要，修改本仓库代码（例如要增删包，可以修改`docker/Dockerfile`）
 3. 根据[该文档](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-create-self-signed-certificate)生成一个自签发的证书，后缀为pfx
 4. 修改`DistroLauncher-Appx/MyDistro.appxmanifest`中的`Publisher=`字段，将其改为与上面的证书CN字段一致
-5. 修改`DistroLauncher-Appx/DistroLauncher-Appx.vcxproj`中的`<PackageCertificateThumbprint>`字段，将其改为上面证书的指纹和证书`CN`字段，方法如下：
+5. 修改`DistroLauncher-Appx/DistroLauncher-Appx.vcxproj`中的`<PackageCertificateThumbprint>`字段，将其改为上面证书的指纹和证书`CN`字段，获取`CN`/`PackageCertificateThumbprint`的方法如下：
 ```powershell
 PS C:\> Get-PfxCertificate -FilePath .\DistroLauncher-Appx_TemporaryKey.pfx
 
@@ -39,7 +39,7 @@ asdfsadfadfs9asdfasdfsadfE1FC8AC90C26DE1  CN=xxxadsfasdfsadf
 ```
 ## 没有微软开发者账号和azure AD
 6. 进入仓库`setting->secrets->actions->new secrets`，创建以下secrets
-- SIGN_CERT：证书的base64编码，生成方式为：
+- SIGN_CERT：内容为证书的base64编码，base64编码生成方式为：
 ```powershell
 $fileContentBytes = get-content 'YOURFILEPATH.pfx' -Encoding Byte
 [System.Convert]::ToBase64String($fileContentBytes)
@@ -53,5 +53,6 @@ $fileContentBytes = get-content 'YOURFILEPATH.pfx' -Encoding Byte
 - SIGN_CERT
 
 AZURE这几个变量，请参考[这里](https://github.com/marketplace/actions/windows-store-publish#prerequisites)的步骤生成
+SIGN_CERT请参考上面的步骤
 
-修改后，通过点击`actioin`中的`run workflow`就能生成对应的WSL软件包（如果没有开发者账号或不期望发布到应用商店，`Should we upload the appxbundle to the store`这个参数请输入`no`，否则输入`yes`），对应任务的summary页面中，可以下载所有生成的artifacts，其中`rootfs-xxx`是用于制作WSL的文件系统，`siteload-xxx`是可以直接通过双击安装的app软件包，`storeupload-`则是用于上传到微软商店的app软件包
+修改后，通过点击`actioin`中的`run workflow`就能生成对应的WSL软件包（如果没有开发者账号或不期望发布到应用商店，`Should we upload the appxbundle to the store`这个参数请输入`no`，否则输入`yes`），对应任务的summary页面中，可以下载所有生成的`artifacts`，其中`rootfs-xxx`是用于制作WSL的文件系统，`siteload-xxx`是可以直接通过双击安装的app软件包，`storeupload-`则是用于上传到微软商店的app软件包
