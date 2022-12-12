@@ -99,7 +99,6 @@ jobs:
         with:
           name: sideload-openeuler-${{ matrix.release }}
           path: ${{ env.workDir }}/AppPackages/DistroLauncher-Appx/DistroLauncher-Appx_*/*
-          retention-days: 7
       - name: Allow downloading store appxupload
         uses: actions/upload-artifact@v2
         with:
