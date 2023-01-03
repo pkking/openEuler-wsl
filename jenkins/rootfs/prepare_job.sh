@@ -3,8 +3,7 @@
 # prepare buildx 
 docker buildx install
 docker run --privileged --rm tonistiigi/binfmt --install all
-mkdir -p $WORKSPACE_TMP/outdir/
-rm -rf $WORKSPACE_TMP/outdir/
+[ -d $WORKSPACE_TMP/outdir/ ] && rm -rf $WORKSPACE_TMP/outdir/* || mkdir -p $WORKSPACE_TMP/outdir
 
 [ -z "$(docker buildx ls |grep multiarch)" ] && docker buildx create --use --name multiarch
 docker buildx ls
