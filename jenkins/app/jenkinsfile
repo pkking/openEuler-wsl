@@ -5,10 +5,6 @@ pipeline {
         choice(choices: ['22.03', '20.03', '22.09'], name: 'release')
     }
 
-    environment {
-        release_version='0'
-    }
-
     stages {
         stage('prepare') {
             steps {
@@ -16,7 +12,7 @@ pipeline {
                 bat 'pip install -r requirements.txt'
                 bat 'echo %release%'
                 script {
-                    release_version = bat(returnStdout: true, script: 'python get_sp_version.py %release%')
+                    env.release_version = bat(returnStdout: true, script: 'python get_sp_version.py %release%')
                 }
                 bat 'echo %release_version% %env.release_version%'
                 bat 'echo %env.release_version%.%BUILD_NUMBER%'
