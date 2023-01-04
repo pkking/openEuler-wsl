@@ -5,6 +5,7 @@ pipeline {
         stage('Hello') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'lichaoran-gitee', url: 'https://gitee.com/mywaaagh_admin/wsl']]])
+                sh 'python'
             }
         }
     }
