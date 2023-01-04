@@ -22,4 +22,6 @@ if __name__ == '__main__':
     if len(sys.argv) != 2:
         print('{} <release>'.format(sys.argv[0]))
         sys.exit(1)
-    print(get_sp_version(sys.argv[1]))
+    release = sys.argv[1]
+    release = release.replace('.', '')
+    print(release + '.' + get_sp_version(sys.argv[1]))
