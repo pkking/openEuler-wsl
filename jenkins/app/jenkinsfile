@@ -1,11 +1,21 @@
 pipeline {
     agent {label 'windows'}
 
+    parameters {
+        choice(choices: ['22.03', '20.03', '22.09'], name: 'release')
+        string(name: 'sp_version', defaultValue: '0')
+        string(name: 'release_version', defaultValue: '0')
+    }
+
     stages {
         stage('prepare') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'lichaoran-gitee', url: 'https://gitee.com/mywaaagh_admin/wsl']]])
                 bat 'pip install -r requirements.txt'
+                env.sp_version = bat 'python get_sp_version.py ${release}'
+                env.release_version = bat 'echo %release:.=%'
+                bat 'echo ${release}'
+                bat 'echo ${env.release_version}.${env.sp_version}.${BUILD_NUMBER}'
             }
         }
     }
