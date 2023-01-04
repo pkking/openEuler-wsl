@@ -17,8 +17,8 @@ pipeline {
                 bat 'echo %release%'
                 script {tmp_var = bat(returnStdout: true, script: 'python get_sp_version.py %release%')}
                 script {env.release_version = tmp_var}
-                bat 'echo ${release}'
-                bat 'echo ${env.release_version}.${BUILD_NUMBER}'
+                bat 'echo %release_version% %env.release_version%'
+                bat 'echo %env.release_version%.%BUILD_NUMBER%'
             }
         }
     }
