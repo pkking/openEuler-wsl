@@ -15,8 +15,10 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'lichaoran-gitee', url: 'https://gitee.com/mywaaagh_admin/wsl']]])
                 bat 'pip install -r requirements.txt'
-                env.sp_version = bat(returnStdout: true, script: 'python get_sp_version.py ${release}').trim()
-                env.release_version = bat(returnStdout:true, script: 'echo %release:.=%').trim()
+                tmp_var = bat(returnStdout: true, script: 'python get_sp_version.py ${release}').trim()
+                env.sp_version = tmp_var
+                tmp_var = bat(returnStdout:true, script: 'echo %release:.=%').trim()
+                env.release_version = tmp_var
                 bat 'echo ${release}'
                 bat 'echo ${env.release_version}.${env.sp_version}.${BUILD_NUMBER}'
             }
