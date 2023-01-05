@@ -25,7 +25,7 @@ pipeline {
                 }
                 bat 'echo %PATH%'
                 bat 'powershell "New-Item -ItemType directory -Path certificate"'
-                writeFile file: 'certificate\certificate.txt', text: '${env.wsl_cert_b64_lichaoran}'
+                writeFile file: 'certificate\certificate.txt', text: "${env.wsl_cert_b64_lichaoran}"
                 bat 'powershell "certutil -decode certificate\certificate.txt certificate\certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\Trust -FilePath certificate\certificate.pfx"'
                 bat 'Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\My -FilePath certificate\certificate.pfx'
