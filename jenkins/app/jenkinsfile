@@ -16,16 +16,10 @@ pipeline {
                 bat 'pip install -r requirements.txt'
                 echo "${release} ${env.release_version}"
                 script {
-                    stdout = bat returnStdout: true, script: 'python get_sp_version.py %release%'
-                    println("stdout ####" + stdout + "###########")
-
                     nstdout = bat(returnStdout: true, script: '@python get_sp_version.py %release%').trim()
                     println("stdout ####" + nstdout + "###########")
-
-                    ntstdout = bat(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
-                    println("stdout ####" + ntstdout + "###########")
                 }
-                echo "${stdout} ${nstdout} ${ntstdout} ${release_version} ${env.release_version} ${BUILD_NUMBER}"
+                echo "${nstdout}.${BUILD_NUMBER}"
             }
         }
     }
