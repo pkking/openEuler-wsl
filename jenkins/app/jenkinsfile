@@ -5,18 +5,21 @@ pipeline {
         choice(choices: ['22.03', '20.03', '22.09'], name: 'release')
     }
 
+    environment {
+        release_version = '0'
+    }
+
     stages {
         stage('prepare') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'lichaoran-gitee', url: 'https://gitee.com/mywaaagh_admin/wsl']]])
                 bat 'pip install -r requirements.txt'
-                bat 'echo %release% %release_version%'
+                echo ' ${release} ${env.release_version}'
 
                 script {
                     env.release_version = bat returnStdout: true, script: 'python get_sp_version.py %release%'
                 }
-                echo '${release_version} ${env.release_version} %release_version% %env.release_version%'
-                echo '%release_version%.%BUILD_NUMBER%'
+                echo '${release_version} ${env.release_version} ${BUILD_NUMBER}'
             }
         }
     }
