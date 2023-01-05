@@ -33,10 +33,10 @@ pipeline {
                 bat 'Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\\My -FilePath certificate.pfx'
             }
         }
-        post {
-            always {
-                cleanWs()
-            }
+    }
+    post {
+        always {
+            cleanWs()
         }
     }
 }
