@@ -21,7 +21,7 @@ pipeline {
                     println("stdout ####" + release_version + "###########")
                 }
                 bat('@echo "now WSL APP version: %release_version%.%BUILD_NUMBER%"')
-                echo "${nstdout}.${BUILD_NUMBER}"
+                echo "${release_version}.${BUILD_NUMBER}"
             }
         }
     }
