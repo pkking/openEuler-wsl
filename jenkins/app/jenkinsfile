@@ -19,7 +19,7 @@ pipeline {
                     stdout = bat returnStdout: true, script: 'python get_sp_version.py %release%'
                     println("stdout ####" + stdout + "###########")
 
-                    nstdout = bat returnStdout: true, script: '@python get_sp_version.py %release%'
+                    nstdout = bat(returnStdout: true, script: '@python get_sp_version.py %release%').trim()
                     println("stdout ####" + nstdout + "###########")
 
                     ntstdout = bat(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
