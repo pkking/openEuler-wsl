@@ -5,10 +5,6 @@ pipeline {
         choice(choices: ['22.03', '20.03', '22.09'], name: 'release')
     }
 
-    environment {
-        release_version = "0"
-    }
-
     stages {
         stage('prepare') {
             steps {
@@ -19,7 +15,7 @@ pipeline {
                     release_version = bat(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
                 }
                 script {
-                    env.release_version = powershell(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
+                    env.release_version = bat(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
                 }
                 bat 'echo ${release_version} ${env.release_version} %release_version% %env.release_version%'
                 bat 'echo %release_version%.%BUILD_NUMBER%'
