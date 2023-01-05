@@ -61,7 +61,7 @@ if exist "D:\tools\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MS
 )
 if %MSBUILD%==() (
     echo "I couldn't find MSBuild on your PC. Make sure it's installed somewhere, and if it's not in the above if statements (in build.bat), add it."
-    goto :EXIT
+    EXIT 1
 ) 
 :FOUND_MSBUILD
 set _MSBUILD_TARGET=Build
