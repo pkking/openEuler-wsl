@@ -17,7 +17,8 @@ pipeline {
                 echo "${release} ${env.release_version}"
                 script {
                     def release_version = bat returnStdout: true, script: 'python get_sp_version.py %release%'
-                    println release_version
+                    env.release_version = release_version
+                    println release_version env.release_version
                 }
                 echo "${release_version} ${env.release_version} ${BUILD_NUMBER}"
             }
