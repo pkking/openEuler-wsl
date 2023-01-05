@@ -17,9 +17,10 @@ pipeline {
 
                 script {
                     nstdout = bat(returnStdout: true, script: '@python get_sp_version.py %release%').trim()
-                    println("stdout ####" + nstdout + "###########")
+                    release_version = nstdout
+                    println("stdout ####" + release_version + "###########")
                 }
-                bat('echo "now WSL APP version: %nstdout%.%BUILD_NUMBER%"')
+                bat('@echo "now WSL APP version: %release_version%.%BUILD_NUMBER%"')
                 echo "${nstdout}.${BUILD_NUMBER}"
             }
         }
