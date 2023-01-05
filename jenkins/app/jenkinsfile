@@ -20,9 +20,10 @@ pipeline {
                     release_version = nstdout
                     println("stdout ####" + release_version + "###########")
                 }
-                bat('@echo "%release_version%.%BUILD_NUMBER%"')
+                withEnv(['release_version=${release_version}']) {
+                    bat('@echo "%release_version%.%BUILD_NUMBER%"')
+                }
                 echo "${release_version}.${BUILD_NUMBER}"
-                powershell('echo "${release_version}.${BUILD_NUMBER}"')
             }
         }
     }
