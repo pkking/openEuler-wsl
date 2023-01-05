@@ -24,7 +24,7 @@ pipeline {
                     bat('python custom.py -r %release% -v %release_version%.%BUILD_NUMBER%')
                 }
                 bat 'echo %PATH%'
-                powershell 'echo pws'
+                pwsh 'echo pws'
                 cleanWs()
             }
         }
