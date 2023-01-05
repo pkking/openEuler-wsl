@@ -13,10 +13,10 @@ pipeline {
                 bat 'echo %release% %release_version%'
 
                 script {
-                    env.release_version = bat(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
+                    env.release_version = bat returnStdout: true, script: 'python get_sp_version.py %release%'
                 }
-                bat 'echo ${release_version} ${env.release_version} %release_version% %env.release_version%'
-                bat 'echo %release_version%.%BUILD_NUMBER%'
+                echo '${release_version} ${env.release_version} %release_version% %env.release_version%'
+                echo '%release_version%.%BUILD_NUMBER%'
             }
         }
     }
