@@ -23,7 +23,7 @@ pipeline {
                 withEnv(["release_version=${release_version}"]) {
                     bat('python custom.py -r %release% -v %release_version%.%BUILD_NUMBER%')
                 }
-                cleanWS()
+                cleanWs()
             }
         }
     }
