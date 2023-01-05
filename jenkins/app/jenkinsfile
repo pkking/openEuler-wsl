@@ -30,7 +30,8 @@ pipeline {
                 bat 'powershell "certutil -decode certificate.txt certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\\Trust -FilePath certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\\My -FilePath certificate.pfx"'
-                bat '.\\build.bat'
+                bat 'msbuild DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundlePlatforms=x64|ARM64 -verbosity:normal /p:UapAppxPackageBuildMode="StoreUpload" /p:UseSubFolderForOutputDirDuringMultiPlatformBuild=false
+'
             }
         }
     }
