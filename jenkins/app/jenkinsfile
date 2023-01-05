@@ -32,9 +32,10 @@ pipeline {
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\\Trust -FilePath certificate.pfx"'
                 bat 'Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\\My -FilePath certificate.pfx'
             }
-        }
+        
             steps {
                 cleanWs()
             }
+        }
     }
 }
