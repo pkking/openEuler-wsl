@@ -16,9 +16,7 @@ pipeline {
                 bat 'pip install -r requirements.txt'
                 echo "${release} ${env.release_version}"
 
-                script {
-                    env.release_version = bat returnStdout: true, script: 'python get_sp_version.py %release%'
-                }
+                def release_version = bat returnStdout: true, script: 'python get_sp_version.py %release%'
                 echo "${release_version} ${env.release_version} ${BUILD_NUMBER}"
             }
         }
