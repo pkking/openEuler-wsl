@@ -19,7 +19,7 @@ pipeline {
                     nstdout = bat(returnStdout: true, script: '@python get_sp_version.py %release%').trim()
                     println("stdout ####" + nstdout + "###########")
                 }
-                echo "${nstdout}.${BUILD_NUMBER}"
+                bat "now WSL APP version: %nstdout%.%BUILD_NUMBER%"
             }
         }
     }
