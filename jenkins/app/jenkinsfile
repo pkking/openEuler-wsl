@@ -14,12 +14,12 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'lichaoran-gitee', url: 'https://gitee.com/mywaaagh_admin/wsl']]])
                 bat 'pip install -r requirements.txt'
-                echo "${release} ${env.release_version}"
+
                 script {
                     nstdout = bat(returnStdout: true, script: '@python get_sp_version.py %release%').trim()
                     println("stdout ####" + nstdout + "###########")
                 }
-                bat "now WSL APP version: %nstdout%.%BUILD_NUMBER%"
+                bat "echo now WSL APP version: %nstdout%.%BUILD_NUMBER%"
             }
         }
     }
