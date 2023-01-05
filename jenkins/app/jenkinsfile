@@ -21,8 +21,11 @@ pipeline {
 
                     nstdout = bat returnStdout: true, script: '@python get_sp_version.py %release%'
                     println("stdout ####" + nstdout + "###########")
+
+                    ntstdout = bat(returnStdout: true, script: 'python get_sp_version.py %release%').trim()
+                    println("stdout ####" + ntstdout + "###########")
                 }
-                echo "${stdout} ${nstdout} ${release_version} ${env.release_version} ${BUILD_NUMBER}"
+                echo "${stdout} ${nstdout} ${ntstdout} ${release_version} ${env.release_version} ${BUILD_NUMBER}"
             }
         }
     }
