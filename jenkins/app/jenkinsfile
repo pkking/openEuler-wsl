@@ -20,13 +20,23 @@ pipeline {
                     release_version = nstdout
                     println("stdout ####" + release_version + "###########")
                 }
+                
                 withEnv(["release_version=${release_version}"]) {
                     bat('python custom.py -r %release% -v %release_version%.%BUILD_NUMBER%')
                 }
-                bat 'echo %PATH%'
+
+                dir ('x64') {
+                    bat 'curl -o install.tar.gz -L https://lichaoran:%wsl_api_token%@jenkins.osinfra.cn/job/openeuler-wsl/job/rootfs/arch=x86_64,label=docker-x86-openeuler-slaves/lastSuccessfulBuild/artifact/outdir/22.03-x86_64.tar.gz'
+                }
+
+                dir ('ARM64') {
+                    bat 'curl -o install.tar.gz -L https://lichaoran:%wsl_api_token%@jenkins.osinfra.cn/job/openeuler-wsl/job/rootfs/arch=aarch64,label=docker-x86-openeuler-slaves/lastSuccessfulBuild/artifact/outdir/22.03-aarch64.tar.gz'
+                }
+
                 withCredentials([string(credentialsId: 'wsl_cert_b64_lichaoran', variable: 'cert_b64')]) {
                     writeFile file: 'certificate.txt', text: cert_b64
                 }
+                
                 bat 'powershell "certutil -decode certificate.txt certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\\Trust -FilePath certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\\My -FilePath certificate.pfx"'
