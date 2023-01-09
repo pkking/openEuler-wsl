@@ -8,7 +8,7 @@ on:
         default: 'no'
 
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 concurrency: build-wsl
 
 env:
@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [22.03, 20.03]
+        release: [22.03, 20.03, 22.09]
     steps:
       - name: Checkout code
         shell: bash
