@@ -51,7 +51,7 @@ pipeline {
                 }
 
                 bat 'powershell Compress-Archive -Path ".\\AppPackages\\DistroLauncher-Appx\\DistroLauncher-Appx_*\\*" -DestinationPath sideload-%release%.zip'
-                archiveArtifacts artifacts: "sizeload-${release}.zip", followSymlinks: false
+                archiveArtifacts artifacts: "sideload-${release}.zip", followSymlinks: false
             }
         }
     }
