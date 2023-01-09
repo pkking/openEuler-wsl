@@ -50,7 +50,7 @@ pipeline {
                     bat 'powershell Compress-Archive -Path ".\\DistroLauncher-Appx_*_x64_arm64_bundle.appxupload", "*.PNG" -DestinationPath app.zip"'
                 }
 
-                bat 'powershell Compress-Archive -Path .\\AppPackages\\DistroLauncher-Appx\\DistroLauncher-Appx_*\* -DestinationPath sideload-%release%.zip'
+                bat 'powershell Compress-Archive -Path ".\\AppPackages\\DistroLauncher-Appx\\DistroLauncher-Appx_*\\*" -DestinationPath sideload-%release%.zip'
                 archiveArtifacts artifacts: "sizeload-${release}.zip", followSymlinks: false
             }
         }
