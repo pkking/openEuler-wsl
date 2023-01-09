@@ -36,11 +36,12 @@ pipeline {
                 withCredentials([string(credentialsId: 'wsl_cert_b64_lichaoran', variable: 'cert_b64')]) {
                     writeFile file: 'certificate.txt', text: cert_b64
                 }
-                
+
                 bat 'powershell "certutil -decode certificate.txt certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:LocalMachine\\Trust -FilePath certificate.pfx"'
                 bat 'powershell "Import-PfxCertificate -CertStoreLocation Cert:CurrentUser\\My -FilePath certificate.pfx"'
                 bat '.\\build.bat'
+                bat 'powershell "ls AppPackages\\DistroLauncher-Appx"'
             }
         }
     }
