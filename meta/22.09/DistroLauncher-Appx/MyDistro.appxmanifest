@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10" xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities" IgnorableNamespaces="uap mp uap2 uap3 rescap desktop">
-  <Identity Name="30248openEuler.12218FAFD450F" Version="1.0.0.0" Publisher="CN=920C954F-C51F-4683-B12C-C821B68C7D6B" ProcessorArchitecture="x64" />
+  <Identity Name="30248openEuler.openEuler22.09" Version="1.0.0.0" Publisher="CN=920C954F-C51F-4683-B12C-C821B68C7D6B" ProcessorArchitecture="x64" />
   <mp:PhoneIdentity PhoneProductId="96976e62-b251-4758-94fb-095e8ce96f43" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>openEuler 22.09</DisplayName>
