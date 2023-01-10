@@ -3,6 +3,7 @@ pipeline {
 
     parameters {
         choice(choices: ['22.03', '20.03', '22.09'], name: 'release')
+        choice(choices: ['no', 'yes'], name: 'publish')
     }
 
     environment {
@@ -17,11 +18,8 @@ pipeline {
 
                 script {
                     nstdout = bat(returnStdout: true, script: '@python get_sp_version.py %release%').trim()
-                    env.release_version = nstdout
                     release_version = nstdout
-                    println("stdout ####" + release_version + "###########")
                 }
-                bat 'echo %release_version%'
                 
                 withEnv(["release_version=${release_version}"]) {
                     bat('python custom.py -r %release% -v %release_version%.%BUILD_NUMBER%')
@@ -47,13 +45,20 @@ pipeline {
                 bat '.\\build.bat'
                 bat 'powershell "cp -v meta/%release%/%release%.PNG AppPackages/DistroLauncher-Appx/"'
 
-                dir ('AppPackages/DistroLauncher-Appx') {
-                    bat 'powershell ls'
-                    bat 'powershell Compress-Archive -Path ".\\DistroLauncher-Appx_*_x64_arm64_bundle.appxupload", "*.PNG" -DestinationPath app.zip"'
-                }
 
                 bat 'powershell Compress-Archive -Path ".\\AppPackages\\DistroLauncher-Appx\\DistroLauncher-Appx_*\\*" -DestinationPath sideload-%release%.zip'
                 archiveArtifacts artifacts: "sideload-${release}.zip", followSymlinks: false
+
+                if (publish == 'yes') {
+                    dir ('AppPackages/DistroLauncher-Appx') {
+                        bat 'powershell Compress-Archive -Path ".\\DistroLauncher-Appx_*_x64_arm64_bundle.appxupload", "*.PNG" -DestinationPath app.zip"'
+                    }
+                    withCredentials([string(credentialsId:'openeuler_wsl_azure_tenant_id_lichaoran', variable: 'tenant_id'), 
+                                        string(credentialsId:'openeuler_wsl_azure_client_id_lichaoran', variable: 'client_id'), 
+                                        string(credentialsId:'openeuler_wsl_azure_app_key_lichaoran', variable:'app_key')]) {
+                        bat 'python submit.py -c %client_id% -t  %tenant_id% -k %app_key% -r %release% -f AppPackages/DistroLauncher-Appx/app.zip'
+                    }
+                }
             }
         }
     }
