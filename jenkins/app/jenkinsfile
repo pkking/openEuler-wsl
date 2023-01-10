@@ -1,11 +1,6 @@
 pipeline {
     agent {label 'windows'}
 
-    parameters {
-        choice(choices: ['22.03', '20.03', '22.09'], name: 'release')
-        choice(choices: ['no', 'yes'], name: 'publish')
-    }
-
     environment {
         release_version = '0'
     }
