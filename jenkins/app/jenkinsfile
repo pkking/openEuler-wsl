@@ -29,11 +29,11 @@ pipeline {
 
                 withCredentials([string(credentialsId: 'wsl_api_token', variable: 'wsl_jenkins_api_token')]) {
                     dir ('x64') {
-                        bat 'curl -o install.tar.gz -L https://lichaoran:%wsl_jenkins_api_token%@jenkins.osinfra.cn/job/openeuler-wsl/job/rootfs/arch=x86_64,label=docker-x86-openeuler-slaves/lastSuccessfulBuild/artifact/outdir/%release%-x86_64.tar.gz'
+                        bat 'curl -f -o install.tar.gz -L https://lichaoran:%wsl_jenkins_api_token%@jenkins.osinfra.cn/job/openeuler-wsl/job/rootfs/arch=x86_64,label=docker-x86-openeuler-slaves/lastSuccessfulBuild/artifact/outdir/%release%-x86_64.tar.gz'
                     }
 
                     dir ('ARM64') {
-                        bat 'curl -o install.tar.gz -L https://lichaoran:%wsl_jenkins_api_token%@jenkins.osinfra.cn/job/openeuler-wsl/job/rootfs/arch=aarch64,label=docker-x86-openeuler-slaves/lastSuccessfulBuild/artifact/outdir/%release%-aarch64.tar.gz'
+                        bat 'curl -f -o install.tar.gz -L https://lichaoran:%wsl_jenkins_api_token%@jenkins.osinfra.cn/job/openeuler-wsl/job/rootfs/arch=aarch64,label=docker-x86-openeuler-slaves/lastSuccessfulBuild/artifact/outdir/%release%-aarch64.tar.gz'
                     }
                 }
 

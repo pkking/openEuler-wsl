@@ -61,3 +61,5 @@ AZURE这几个变量，请参考[这里](https://github.com/marketplace/actions/
 SIGN_CERT请参考上面的步骤
 
 修改后，通过点击`actioin`中的`run workflow`就能生成对应的WSL软件包（如果没有开发者账号或不期望发布到应用商店，`Should we upload the appxbundle to the store`这个参数请输入`no`，否则输入`yes`），对应任务的summary页面中，可以下载所有生成的`artifacts`，其中`rootfs-xxx`是用于制作WSL的文件系统，`siteload-xxx`是可以直接通过双击安装的app软件包，`storeupload-`则是用于上传到微软商店的app软件包
+
+**注意**：本仓库的脚本只能更新已有应用的提交，因此新创建的应用需要人工进行第一次提交，可以参考[如何人工提交](https://learn.microsoft.com/zh-cn/windows/apps/publish/publish-your-app/create-app-submission?pivots=store-installer-msix)
