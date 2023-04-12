@@ -25,7 +25,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        release: [22.03, 20.03, 22.09]
+        release: [22.03, 20.03, 23.03]
     steps:
       - name: Checkout code
         shell: bash
@@ -88,7 +88,7 @@ jobs:
         working-directory: ${{ env.workDir }}
         shell: powershell
         run: |
-          msbuild .\DistroLauncher.sln /t:Build /m /nr:false /p:Configuration=Release /p:AppxBundle=Always /p:AppxBundlePlatforms="${{ env.targets }}" -verbosity:normal /p:UapAppxPackageBuildMode="StoreUpload" /p:UseSubFolderForOutputDirDuringMultiPlatformBuild=false
+          .\build.bat clean
       - name: copy assets
         working-directory: ${{ env.workDir }}
         shell: bash

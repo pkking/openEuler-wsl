@@ -1,0 +1,10 @@
+{
+    "release": "23.03",
+    "desc_en": "openEuler is an open-source operating system. The current openEuler kernel is based on Linux and supports server, cloud computing, edge computing, embedded, and other application scenarios. openEuler is committed to providing a secure, stable, and easy-to-use operating system. As an efficient, stable, and secure open-source OS built by global open-source contributors, openEuler applies to database, big data, cloud computing, and artificial intelligence (AI) scenarios. In addition, openEuler community is an open-source community for global OSs. Through community cooperation, openEuler builds an innovative platform, builds a unified and open OS that supports multiple processor architectures, and promotes the prosperity of the software and hardware application ecosystem.",
+    "desc_zh": "openEuler是一款开源操作系统。当前openEuler内核源于Linux，支持鲲鹏及其它多种处理器，能够充分释放计算芯片的潜能，是由全球开源贡献者构建的高效、稳定、安全的开源操作系统，适用于数据库、大数据、云计算、人工智能等应用场景。同时，openEuler是一个面向全球的操作系统开源社区，通过社区合作，打造创新平台，构建支持多处理器架构、统一和开放的操作系统，推动软硬件应用生态繁荣发展。",
+    "upload_file": "DistroLauncher-Appx_1.0.0.0_x64_arm64_bundle.appxupload",
+    "image": "23.03.PNG", 
+    "releasenote_en": "https://docs.openeuler.org/en/docs/23.03/docs/Releasenotes/release_notes.html", 
+    "releasenote_zh": "https://docs.openeuler.org/zh/docs/23.03/docs/Releasenotes/release_notes.html", 
+    "friendlyName": "infra@openeuler.org"
+}
