@@ -4,7 +4,7 @@ pipeline {
 
     environment {
         release_version = '0'
-        GITEE_TOKEN = credentials('openeuler-ci-bot')
+        GITEE_TOKEN = credentials('44219abb-c35b-4449-b5a9-76fe5c35819f')
     }
 
     stages {
@@ -20,7 +20,7 @@ pipeline {
                 bat 'pip install -r requirements.txt'
                 
                 bat 'curl -f -o ci_tags.py -L https://gitee.com/openeuler/infrastructure/raw/master/ci/tools/ci_tags.py'
-                
+
                 bat 'python ci_tags.py %giteeTargetNamespace% %giteeTargetRepoName% %giteePullRequestIid% %GITEE_TOKEN% ATP'
             }
         }
@@ -193,3 +193,4 @@ pipeline {
         }
     }
 }
+
