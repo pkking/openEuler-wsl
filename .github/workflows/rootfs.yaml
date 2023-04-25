@@ -60,7 +60,7 @@ jobs:
           mv install.tar.gz openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz
       -
         name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar
           path: openeuler-${{ matrix.release }}-${{ matrix.arch }}-wsl-rootfs.tar.gz
