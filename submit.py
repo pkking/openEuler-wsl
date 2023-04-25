@@ -28,6 +28,7 @@ logger.addHandler(ch)
 
 REQUEST_TIMEOUT = 60
 
+
 class SubmitPackage:
     """
     submit the wsl app
@@ -35,8 +36,10 @@ class SubmitPackage:
 
     def __init__(self, tenantId: str, clientId: str, clientSecret: str) -> None:
         self.baseurl = tokenResource = "https://manage.devcenter.microsoft.com"
-        tokenRequestBody = f"grant_type=client_credentials&client_id={clientId}&" \
-                            f"client_secret={clientSecret}&resource={tokenResource}"
+        tokenRequestBody = (
+            f"grant_type=client_credentials&client_id={clientId}&"
+            f"client_secret={clientSecret}&resource={tokenResource}"
+        )
         tokenHeaders = {
             "Content-Type": "application/x-www-form-urlencoded; charset=utf-8"
         }
@@ -44,13 +47,11 @@ class SubmitPackage:
             f"https://login.microsoftonline.com/{tenantId}/oauth2/token",
             data=tokenRequestBody,
             headers=tokenHeaders,
-            timeout=REQUEST_TIMEOUT
+            timeout=REQUEST_TIMEOUT,
         )
 
         logger.info(
-            "get access token status: %s %s",
-            tokenResponse.status_code,
-            tokenResponse.reason,
+            f"get access token status: {tokenResponse.status_code} {tokenResponse.reason}"
         )
         tokenJson = tokenResponse.json()
         self._acess_token = tokenJson["access_token"]
@@ -74,13 +75,13 @@ class SubmitPackage:
             "Content-type": "application/json",
             "User-Agent": "Python",
         }
-
+        api = f"/v1.0/my/applications"
         appResponse = requests.get(
-            f"{self.baseurl}/v1.0/my/applications", headers=headers, timeout=REQUEST_TIMEOUT
+            f"{self.baseurl}{api}", headers=headers, timeout=REQUEST_TIMEOUT
         )
 
         logger.info(
-            "get app info status: %s %s", appResponse.status_code, appResponse.reason
+            f"get {api} to get app info, status: {appResponse.status_code} {appResponse.reason}"
         )
         # Log correlation ID
         logger.info(appResponse.headers["MS-CorrelationId"])
@@ -98,16 +99,13 @@ class SubmitPackage:
             "Content-type": "application/json",
             "User-Agent": "Python",
         }
-
+        api = f"/v1.0/my/{submissionToRemove}"
         deleteSubmissionResponse = requests.delete(
-            f"{self.baseurl}/v1.0/my/{submissionToRemove}", headers=headers,
-            timeout=REQUEST_TIMEOUT
+            f"{self.baseurl}{api}", headers=headers, timeout=REQUEST_TIMEOUT
         )
 
         logger.info(
-            "delete pending submit status: %s %s",
-            deleteSubmissionResponse.status_code,
-            deleteSubmissionResponse.reason,
+            f"delete {api} to delete pending submit, status: {deleteSubmissionResponse.status_code} {deleteSubmissionResponse.reason}",
         )
         # Log correlation ID
         logger.info(deleteSubmissionResponse.headers["MS-CorrelationId"])
@@ -128,17 +126,14 @@ class SubmitPackage:
             "Content-type": "application/json",
             "User-Agent": "Python",
         }
-
+        api = f"/v1.0/my/applications/{applicationId}/submissions"
         # Create submission
         createSubmissionResponse = requests.post(
-            f"{self.baseurl}/v1.0/my/applications/{applicationId}/submissions",
-            headers=headers, timeout=REQUEST_TIMEOUT
+            f"{self.baseurl}{api}", headers=headers, timeout=REQUEST_TIMEOUT
         )
 
         logger.info(
-            "create submission status: %s %s",
-            createSubmissionResponse.status_code,
-            createSubmissionResponse.reason,
+            f"post {api} to create submission, status: {createSubmissionResponse.status_code} {createSubmissionResponse.reason}"
         )
         # Log correlation ID
         logger.info(createSubmissionResponse.headers["MS-CorrelationId"])
@@ -147,16 +142,14 @@ class SubmitPackage:
         if createSubmissionResponse.status_code >= 400:
             logger.error(submissionJsonObject)
             sys.exit(1)
+
         submissionId = submissionJsonObject["id"]
         fileUploadUrl = submissionJsonObject["fileUploadUrl"]
 
         if len(submissionJsonObject["applicationPackages"]) > 0:
             for package in submissionJsonObject["applicationPackages"]:
                 logger.info(
-                    "package %s %s %s will be replaced",
-                    package["fileName"],
-                    package["fileStatus"],
-                    package["version"],
+                    f"package {package['fileName']} {package['fileStatus']} {package['version']} will be replaced"
                 )
                 package["fileStatus"] = "PendingDelete"
 
@@ -164,16 +157,16 @@ class SubmitPackage:
             submissionJsonObject["applicationPackages"]
         )
 
+        api = f"/v1.0/my/applications/{applicationId}/submissions/{submissionId}"
         # Update submission
         updateSubmissionResponse = requests.put(
-            f"{self.baseurl}/v1.0/my/applications/{applicationId}/submissions/{submissionId}",
+            f"{self.baseurl}{api}",
             json.dumps(appSubmissionRequestJson).encode("utf-8"),
-            headers=headers, timeout=REQUEST_TIMEOUT
+            headers=headers,
+            timeout=REQUEST_TIMEOUT,
         )
         logger.info(
-            "update submission status: %s %s",
-            updateSubmissionResponse.status_code,
-            updateSubmissionResponse.reason,
+            f"put {api} to update submission, status: {updateSubmissionResponse.status_code} {updateSubmissionResponse.reason}"
         )
         # Log correlation ID
         logger.info(updateSubmissionResponse.headers["MS-CorrelationId"])
@@ -185,10 +178,7 @@ class SubmitPackage:
 
         size = os.stat(zipFilePath).st_size
         logger.info(
-            "begin to upload zip file(%s): %s to %s",
-            humanize.naturalsize(size),
-            zipFilePath,
-            fileUploadUrl,
+            f"begin to upload zip file({humanize.naturalsize(size)}): {zipFilePath} to {fileUploadUrl}"
         )
         # Upload images and packages in a zip file.
         blob_client = BlobClient.from_blob_url(fileUploadUrl)
@@ -198,17 +188,14 @@ class SubmitPackage:
             )
 
         logger.info("upload end")
+        api = f"/v1.0/my/applications/{applicationId}/submissions/{submissionId}/commit"
         # Commit submission
         commitResponse = requests.post(
-            f"{self.baseurl}/v1.0/my/applications/{applicationId}/" \
-                "submissions/{submissionId}/commit",
-            headers=headers, timeout=REQUEST_TIMEOUT
+            f"{self.baseurl}{api}", headers=headers, timeout=REQUEST_TIMEOUT
         )
 
         logger.info(
-            "commit submission status: %s %s",
-            commitResponse.status_code,
-            commitResponse.reason,
+            f"post {api} to commit submission, status: {commitResponse.status_code} {commitResponse.reason}"
         )
         # Log correlation ID
         logger.info(commitResponse.headers["MS-CorrelationId"])
@@ -217,27 +204,26 @@ class SubmitPackage:
             logger.error(commitResponseObject)
             sys.exit(1)
 
+        api = f"/v1.0/my/applications/{applicationId}/submissions/{submissionId}/status"
         # Pull submission status until commit process is completed
         getSubmissionStatusResponse = requests.get(
-            f"{self.baseurl}/v1.0/my/applications/{applicationId}" \
-                "/submissions/{submissionId}/status",
-            headers=headers, timeout=REQUEST_TIMEOUT
+            f"{self.baseurl}{api}", headers=headers, timeout=REQUEST_TIMEOUT
         )
+
         submissionJsonObject = getSubmissionStatusResponse.json()
         while submissionJsonObject["status"] == "CommitStarted":
             time.sleep(60)
             getSubmissionStatusResponse = requests.get(
-                f"{self.baseurl}/v1.0/my/applications/{applicationId}/" \
-                    "submissions/{submissionId}/status",
-                headers=headers, timeout=REQUEST_TIMEOUT
+                f"{self.baseurl}{api}", headers=headers, timeout=REQUEST_TIMEOUT
             )
             submissionJsonObject = getSubmissionStatusResponse.json()
-            logger.info("get commit status: %s", submissionJsonObject["status"])
+            logger.info(
+                f"get {api} to grab commit status: {submissionJsonObject['status']}"
+            )
 
         exitCode = 0
         logger.info(
-            "get commit status finished, final status: %s",
-            submissionJsonObject["status"],
+            f"get commit status finished, final status: {submissionJsonObject['status']}"
         )
         if submissionJsonObject["statusDetails"]["errors"]:
             logger.error(submissionJsonObject)
@@ -248,7 +234,7 @@ class SubmitPackage:
 
 def progress(current: int, total: Optional[int]):
     t = total if total else "0"
-    logger.info("%s/%s", humanize.naturalsize(current), humanize.naturalsize(t))
+    logger.info(f"{humanize.naturalsize(current)}/{humanize.naturalsize(t)}")
 
 
 def init_parser():
@@ -303,7 +289,9 @@ if __name__ == "__main__":
     release_data = sp.get_app_info(args.release)
 
     if release_data and "pendingApplicationSubmission" in release_data:
-        submissionToRemove = release_data["pendingApplicationSubmission"]["resourceLocation"]
+        submissionToRemove = release_data["pendingApplicationSubmission"][
+            "resourceLocation"
+        ]
         sp.delete_exist_submission(submissionToRemove)
 
     requestBody = sp.make_submit_body(args.meta, args.template)
