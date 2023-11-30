@@ -32,9 +32,12 @@ MIT
 # how to customize my own WSL
 1. fork本仓库
 2. 根据需要，修改本仓库代码（例如要增删包，可以修改`docker/Dockerfile`）
-3. 根据[该文档](https://learn.microsoft.com/en-us/azure/active-directory/develop/howto-create-self-signed-certificate)生成一个自签发的证书，后缀为pfx
-4. 修改`DistroLauncher-Appx/MyDistro.appxmanifest`中的`Publisher=`字段，将其改为与上面的证书CN字段一致
-5. 修改`DistroLauncher-Appx/DistroLauncher-Appx.vcxproj`中的`<PackageCertificateThumbprint>`字段，将其改为上面证书的指纹和证书`CN`字段，获取`CN`/`PackageCertificateThumbprint`的方法如下：
+3. 根据[该文档](https://learn.microsoft.com/zh-cn/windows/msix/package/create-certificate-package-signing)生成一个自签发的证书，后缀为pfx，例如下面是创建一个有效期5年的自签名证书
+    ```
+    New-SelfSignedCertificate -Type Custom -Subject "CN=openEuler Infra WSL" -KeyUsage DigitalSignature -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3", "2.5.29.19={text}") -NotBefore (Get-Date).AddMonths(60)
+    ```
+5. 修改`DistroLauncher-Appx/MyDistro.appxmanifest`中的`Publisher=`字段，将其改为与上面的证书CN字段一致
+6. 修改`DistroLauncher-Appx/DistroLauncher-Appx.vcxproj`中的`<PackageCertificateThumbprint>`字段，将其改为上面证书的指纹和证书`CN`字段，获取`CN`/`PackageCertificateThumbprint`的方法如下：
 ```powershell
 PS C:\> Get-PfxCertificate -FilePath .\DistroLauncher-Appx_TemporaryKey.pfx
 
